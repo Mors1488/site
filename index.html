@@ -3,9 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Быстрые Запчасти - Самара, Тольятти</title>
+    <title>Быстрые Запчасти - Самара, Тольятти | Оригинальные запчасти для китайских авто</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        emex: {
+                            dark: '#1a1a1a',
+                            gray: '#2d2d2d',
+                            orange: '#ff6b00',
+                            light: '#f5f5f5',
+                            text: '#333333'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         .fade-in {
             opacity: 0;
@@ -28,229 +44,379 @@
         [x-cloak] {
             display: none !important;
         }
+        
+        .emex-btn {
+            background: linear-gradient(180deg, #ff6b00 0%, #e65c00 100%);
+            border: 1px solid #e65c00;
+            transition: all 0.2s ease;
+        }
+        
+        .emex-btn:hover {
+            background: linear-gradient(180deg, #ff7a1a 0%, #ff6b00 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+        }
+        
+        .emex-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            transition: all 0.2s ease;
+        }
+        
+        .emex-card:hover {
+            border-color: #ff6b00;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .status-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="bg-emex-light min-h-screen flex flex-col">
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     
     <div x-data="app()" x-cloak>
-        <!-- Header -->
-        <header class="w-full sticky top-0 z-40 bg-white/80 backdrop-blur border-b">
-            <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <span class="text-xl font-bold">Быстрые Запчасти</span>
-                    <span class="hidden sm:inline text-sm text-gray-500">Доставка сегодня или завтра</span>
+        <!-- Top Bar -->
+        <div class="bg-emex-dark text-white text-sm py-2">
+            <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
+                <div class="flex items-center space-x-6">
+                    <span>🚚 Доставка по Самаре и Тольятти сегодня-завтра</span>
+                    <span>⏰ Работаем: 9:00-21:00</span>
                 </div>
-                <div class="flex items-center gap-3">
-                    <select 
-                        class="border rounded-xl px-3 py-2 text-sm" 
-                        x-model="city"
-                        aria-label="Город доставки"
-                    >
-                        <template x-for="c in cities" :key="c">
-                            <option :value="c" x-text="c"></option>
-                        </template>
-                    </select>
-                    <a 
-                        href="tel:+7-900-000-00-00" 
-                        class="text-sm px-3 py-2 rounded-xl border hover:bg-gray-50"
-                    >
-                        +7-900-000-00-00
-                    </a>
-                    <a 
-                        :href="whatsappLink('Здравствуйте! Хочу уточнить наличие и сроки доставки. Город: ' + city)" 
-                        class="text-sm px-3 py-2 rounded-xl bg-green-600 text-white hover:bg-green-700"
-                    >
-                        WhatsApp
-                    </a>
+                <div class="flex items-center space-x-4">
+                    <a href="#" class="hover:text-emex-orange">Способы оплаты</a>
+                    <span>|</span>
+                    <a href="#" class="hover:text-emex-orange">Гарантия</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <header class="bg-white shadow-sm sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 py-3">
+                <div class="flex items-center justify-between">
+                    <!-- Logo -->
+                    <div class="flex items-center space-x-8">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-emex-orange rounded-lg flex items-center justify-center">
+                                <span class="text-white font-bold text-lg">BZ</span>
+                            </div>
+                            <div>
+                                <div class="font-bold text-xl text-emex-text">Быстрые Запчасти</div>
+                                <div class="text-xs text-gray-500">Самара • Тольятти • Ягодное</div>
+                            </div>
+                        </div>
+                        
+                        <!-- City Selector -->
+                        <div class="relative">
+                            <select 
+                                class="border rounded-lg px-4 py-2 pr-8 appearance-none focus:outline-none focus:ring-2 focus:ring-emex-orange focus:border-emex-orange"
+                                x-model="city"
+                            >
+                                <template x-for="c in cities" :key="c">
+                                    <option :value="c" x-text="c"></option>
+                                </template>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contacts -->
+                    <div class="flex items-center space-x-6">
+                        <div class="text-right">
+                            <div class="font-semibold text-lg">+7-900-000-00-00</div>
+                            <div class="text-xs text-gray-500">Бесплатный звонок</div>
+                        </div>
+                        <div class="flex space-x-3">
+                            <a 
+                                :href="whatsappLink('Здравствуйте! Хочу уточнить наличие запчастей. Город: ' + city)" 
+                                class="bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 transition-colors"
+                            >
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.488"/>
+                                </svg>
+                            </a>
+                            <a 
+                                href="tel:+7-900-000-00-00" 
+                                class="emex-btn text-white p-3 rounded-lg"
+                            >
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>
 
         <!-- Hero Section -->
-        <section class="bg-gradient-to-br from-gray-50 to-white border-b">
-            <div class="max-w-6xl mx-auto px-4 py-10 sm:py-16 grid md:grid-cols-2 gap-8 items-center">
-                <div>
-                    <h1 class="text-3xl sm:text-4xl font-bold leading-tight fade-in">
-                        Запчасти на китайские авто в Самаре и Тольятти
+        <section class="bg-white">
+            <div class="max-w-7xl mx-auto px-4 py-12 grid lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <h1 class="text-4xl lg:text-5xl font-bold text-emex-text leading-tight">
+                        Запчасти для китайских авто<br>
+                        <span class="text-emex-orange">с доставкой за 24 часа</span>
                     </h1>
-                    <p class="mt-3 text-gray-600">
-                        Работаем по принципу: <strong>быстро и по делу</strong>. Проверяем спрос: оставьте заявку — ответим в течение 10–30 минут и сообщим наличие.
-                    </p>
-                    <div class="mt-6 flex flex-wrap gap-3">
+                    
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-6 h-6 bg-emex-orange rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700">Оригиналы и качественные аналоги</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-6 h-6 bg-emex-orange rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700">Гарантия на все запчасти</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-6 h-6 bg-emex-orange rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700">Профессиональные консультации</span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-4">
                         <a 
-                            :href="whatsappLink('Нужна консультация по запчастям. Город: ' + city)" 
-                            class="px-4 py-2 rounded-2xl bg-black text-white hover:opacity-90"
+                            :href="whatsappLink('Нужна консультация по запчастям для китайских авто. Город: ' + city)" 
+                            class="emex-btn px-8 py-4 rounded-lg text-white font-semibold text-lg"
                         >
-                            Написать в WhatsApp
+                            📞 Получить консультацию
                         </a>
                         <a 
-                            href="#request" 
-                            class="px-4 py-2 rounded-2xl border hover:bg-gray-50"
+                            href="#catalog" 
+                            class="px-8 py-4 rounded-lg border-2 border-emex-orange text-emex-orange font-semibold text-lg hover:bg-emex-orange hover:text-white transition-colors"
                         >
-                            Оставить заявку
+                            🔍 Смотреть каталог
                         </a>
                     </div>
-                    <ul class="mt-6 text-sm text-gray-600 space-y-1">
-                        <li>• Доставка сегодня/завтра по Самаре, Тольятти, Ягодному</li>
-                        <li>• Оригиналы и качественные аналоги</li>
-                        <li>• Работаем с СТО, таксопарками и частными клиентами</li>
-                    </ul>
                 </div>
+
                 <div class="relative">
                     <img
-                        alt="Склад запчастей"
-                        class="w-full h-64 sm:h-80 object-cover rounded-3xl shadow img-loading"
-                        src="https://placehold.co/800x500?text=Запчасти"
+                        src="https://placehold.co/800x600?text=Китайские+авто+запчасти"
+                        alt="Запчасти для китайских автомобилей"
+                        class="w-full rounded-2xl shadow-2xl img-loading"
                         @load="event => event.target.classList.add('img-loaded')"
-                        @error="event => {
-                            event.target.src = 'https://placehold.co/800x500?text=Ошибка+загрузки';
-                            event.target.classList.add('img-loaded');
-                        }"
                     />
-                    <div class="absolute -bottom-4 -right-4 bg-white rounded-2xl shadow p-4">
-                        <div class="text-sm">Среднее время ответа</div>
-                        <div class="text-2xl font-bold">10–30 мин</div>
+                    <div class="absolute -bottom-4 -right-4 bg-emex-orange text-white p-6 rounded-2xl shadow-lg">
+                        <div class="text-2xl font-bold">1 250+</div>
+                        <div class="text-sm">позиций в наличии</div>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Catalog Section -->
-        <section id="catalog" class="max-w-6xl mx-auto px-4 py-10">
-            <div class="flex items-end justify-between gap-4 mb-6 flex-col sm:flex-row">
-                <div>
-                    <h2 class="text-2xl font-bold">Популярные позиции</h2>
-                    <p class="text-gray-600 text-sm">Выберите деталь и отправьте быстрый запрос в 1 клик.</p>
+        <section id="catalog" class="bg-gray-50 py-16">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-emex-text mb-4">Популярные запчасти</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">Широкий ассортимент запчастей для китайских автомобилей с гарантией качества</p>
                 </div>
-                <input
-                    x-model="searchQuery"
-                    placeholder="Поиск по названию, модели или артикулу"
-                    class="border rounded-xl px-3 py-2 w-full sm:max-w-md"
-                />
-            </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <template x-for="p in filteredProducts" :key="p.id">
-                    <div class="fade-in rounded-2xl border shadow-sm overflow-hidden bg-white flex flex-col">
-                        <img 
-                            :src="p.img" 
-                            :alt="p.title" 
-                            class="w-full h-48 object-cover img-loading"
-                            @load="event => event.target.classList.add('img-loaded')"
-                            @error="event => {
-                                event.target.src = 'https://placehold.co/400x260?text=Нет+изображения';
-                                event.target.classList.add('img-loaded');
-                            }"
-                            loading="lazy"
-                        />
-                        <div class="p-4 flex-1 flex flex-col">
-                            <div class="flex items-start justify-between gap-2">
-                                <h3 class="font-semibold leading-snug" x-text="p.title"></h3>
-                                <span 
-                                    class="text-xs px-2 py-1 rounded-full" 
+
+                <!-- Search -->
+                <div class="bg-white rounded-2xl shadow-sm p-6 mb-8">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-1">
+                            <input
+                                x-model="searchQuery"
+                                placeholder="Поиск по артикулу, названию или модели авто..."
+                                class="w-full px-6 py-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emex-orange focus:border-emex-orange"
+                            />
+                        </div>
+                        <button class="emex-btn px-8 py-4 rounded-lg text-white font-semibold">
+                            Найти
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <template x-for="p in filteredProducts" :key="p.id">
+                        <div class="emex-card rounded-2xl p-5 fade-in">
+                            <!-- Image -->
+                            <div class="relative mb-4">
+                                <img 
+                                    :src="p.img" 
+                                    :alt="p.title" 
+                                    class="w-full h-48 object-contain img-loading"
+                                    @load="event => event.target.classList.add('img-loaded')"
+                                    @error="event => {
+                                        event.target.src = 'https://placehold.co/400x260?text=Нет+изображения';
+                                        event.target.classList.add('img-loaded');
+                                    }"
+                                />
+                                <div 
+                                    class="status-badge absolute top-3 right-3" 
                                     :class="p.status === 'В наличии' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'"
                                     x-text="p.status"
-                                ></span>
+                                ></div>
                             </div>
-                            <div class="text-sm text-gray-600 mt-1" x-text="'Модели: ' + p.models.join(', ')"></div>
-                            <div class="mt-3 font-bold text-lg" x-text="'от ' + p.price.toLocaleString('ru-RU') + ' ₽'"></div>
-                            <div class="mt-4 flex gap-2">
-                                <a 
-                                    :href="whatsappLink('Интересует ' + p.title + ' (' + p.id + ') для моделей: ' + p.models.join(', ') + '. Город: ' + city + '. Подскажите наличие и срок доставки.')" 
-                                    class="px-3 py-2 rounded-xl bg-green-600 text-white hover:bg-green-700 text-sm"
-                                >
-                                    Узнать наличие
-                                </a>
-                                <a 
-                                    :href="'mailto:orders@example.com?subject=' + encodeURIComponent('Запрос: ' + p.title + ' (' + p.id + ')') + '&body=' + encodeURIComponent('Интересует ' + p.title + ' (' + p.id + ') для моделей: ' + p.models.join(', ') + '. Город: ' + city + '. Подскажите наличие и срок доставки.')" 
-                                    class="px-3 py-2 rounded-xl border hover:bg-gray-50 text-sm"
-                                >
-                                    На почту
-                                </a>
+
+                            <!-- Content -->
+                            <div class="space-y-3">
+                                <h3 class="font-semibold text-emex-text leading-tight" x-text="p.title"></h3>
+                                <div class="text-sm text-gray-600" x-text="'Для: ' + p.models.join(', ')"></div>
+                                <div class="text-xs text-gray-500" x-text="'Арт: ' + p.id"></div>
+                                
+                                <div class="flex items-center justify-between pt-3">
+                                    <div class="text-2xl font-bold text-emex-orange" x-text="p.price.toLocaleString('ru-RU') + ' ₽'"></div>
+                                    <a 
+                                        :href="whatsappLink('Интересует ' + p.title + ' (' + p.id + ') для ' + p.models[0] + '. Город: ' + city)" 
+                                        class="emex-btn px-4 py-2 rounded-lg text-white text-sm font-semibold"
+                                    >
+                                        Заказать
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </template>
+                    </template>
+                </div>
+
+                <div class="text-center mt-12" x-show="filteredProducts.length === 0">
+                    <p class="text-gray-500">Ничего не найдено. Попробуйте изменить поисковый запрос.</p>
+                </div>
             </div>
         </section>
 
         <!-- Request Block -->
-        <section id="request" class="bg-gray-50 border-t">
-            <div class="max-w-6xl mx-auto px-4 py-10 grid md:grid-cols-2 gap-8">
-                <div>
-                    <h2 class="text-2xl font-bold">Нет нужной детали в каталоге?</h2>
-                    <p class="text-gray-600 mt-2">Оставьте быстрый запрос — подберём аналог и сообщим сроки доставки.</p>
-                    <ul class="mt-4 text-sm text-gray-600 space-y-1">
-                        <li>• Ответ за 10–30 минут</li>
-                        <li>• Доставка по Самаре/Тольятти/Ягодному сегодня-завтра</li>
-                        <li>• Работаем с СТО, таксопарками и частниками</li>
-                    </ul>
+        <section id="request" class="bg-white py-16">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="space-y-6">
+                        <h2 class="text-3xl font-bold text-emex-text">Не нашли нужную запчасть?</h2>
+                        <p class="text-gray-600 text-lg">Оставьте заявку — мы найдем нужную деталь и сообщим стоимость в течение 30 минут</p>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-emex-orange rounded-full flex items-center justify-center flex-shrink-0">
+                                    <span class="text-white font-bold">1</span>
+                                </div>
+                                <span>Оставьте заявку с артикулом или названием</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-emex-orange rounded-full flex items-center justify-center flex-shrink-0">
+                                    <span class="text-white font-bold">2</span>
+                                </div>
+                                <span>Получите ответ с ценой и сроком поставки</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-emex-orange rounded-full flex items-center justify-center flex-shrink-0">
+                                    <span class="text-white font-bold">3</span>
+                                </div>
+                                <span>Заберите заказ в пункте выдачи или получите с доставкой</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-2xl p-8">
+                        <form class="space-y-4">
+                            <input 
+                                class="w-full px-6 py-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emex-orange" 
+                                placeholder="Ваше имя"
+                                x-model="formData.name"
+                            />
+                            <input 
+                                class="w-full px-6 py-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emex-orange" 
+                                placeholder="Телефон*"
+                                x-model="formData.phone"
+                                required
+                            />
+                            <input 
+                                class="w-full px-6 py-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emex-orange" 
+                                placeholder="Марка и модель авто"
+                                x-model="formData.model"
+                            />
+                            <textarea 
+                                class="w-full px-6 py-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emex-orange" 
+                                placeholder="Название запчасти или артикул*"
+                                rows="3"
+                                x-model="formData.part"
+                                required
+                            ></textarea>
+                            
+                            <div class="text-xs text-red-500" x-show="formData.phone && !isValidPhone(formData.phone)" x-cloak>
+                                Введите корректный номер телефона
+                            </div>
+                            
+                            <button 
+                                type="button"
+                                @click="sendRequest"
+                                :disabled="!formData.phone || !isValidPhone(formData.phone) || !formData.part"
+                                :class="{'opacity-50 cursor-not-allowed': !formData.phone || !isValidPhone(formData.phone) || !formData.part}"
+                                class="w-full emex-btn py-4 rounded-lg text-white font-semibold text-lg"
+                            >
+                                📨 Отправить заявку
+                            </button>
+                            
+                            <p class="text-xs text-gray-500 text-center">
+                                Нажимая кнопку, вы соглашаетесь с обработкой персональных данных
+                            </p>
+                        </form>
+                    </div>
                 </div>
-                <form class="bg-white rounded-2xl p-4 border shadow-sm">
-                    <div class="grid sm:grid-cols-2 gap-3">
-                        <input 
-                            class="border rounded-xl px-3 py-2" 
-                            placeholder="Имя"
-                            x-model="formData.name"
-                        />
-                        <input 
-                            class="border rounded-xl px-3 py-2" 
-                            placeholder="Телефон*"
-                            x-model="formData.phone"
-                            required
-                        />
-                        <input 
-                            class="border rounded-xl px-3 py-2 sm:col-span-2" 
-                            placeholder="Модель авто (марка, год)"
-                            x-model="formData.model"
-                        />
-                        <input 
-                            class="border rounded-xl px-3 py-2 sm:col-span-2" 
-                            placeholder="Какая запчасть нужна"
-                            x-model="formData.part"
-                        />
-                        <textarea 
-                            class="border rounded-xl px-3 py-2 sm:col-span-2" 
-                            placeholder="Комментарий"
-                            rows="3"
-                            x-model="formData.comment"
-                        ></textarea>
-                    </div>
-                    
-                    <div class="mt-2 text-xs text-red-500" x-show="formData.phone && !isValidPhone(formData.phone)" x-cloak>
-                        Введите корректный номер телефона
-                    </div>
-                    
-                    <div class="mt-4 flex gap-3 flex-wrap">
-                        <a 
-                            :href="whatsappLink('Заявка с сайта\nИмя: ' + formData.name + '\nТелефон: ' + formData.phone + '\nГород: ' + city + '\nМодель авто: ' + formData.model + '\nЗапчасть: ' + formData.part + '\nКомментарий: ' + formData.comment)" 
-                            :class="{'bg-green-600 hover:bg-green-700': formData.phone && isValidPhone(formData.phone) && (formData.model || formData.part), 'bg-gray-300 pointer-events-none': !(formData.phone && isValidPhone(formData.phone) && (formData.model || formData.part))}" 
-                            class="px-4 py-2 rounded-2xl text-white"
-                        >
-                            Отправить в WhatsApp
-                        </a>
-                        <a 
-                            :href="'mailto:orders@example.com?subject=' + encodeURIComponent('Заявка с сайта') + '&body=' + encodeURIComponent('Заявка с сайта\nИмя: ' + formData.name + '\nТелефон: ' + formData.phone + '\nГород: ' + city + '\nМодель авто: ' + formData.model + '\nЗапчасть: ' + formData.part + '\nКомментарий: ' + formData.comment)" 
-                            class="px-4 py-2 rounded-2xl border hover:bg-gray-50"
-                        >
-                            Отправить на e-mail
-                        </a>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-2">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных.</p>
-                </form>
             </div>
         </section>
 
         <!-- Footer -->
-        <footer class="border-t">
-            <div class="max-w-6xl mx-auto px-4 py-8 grid sm:grid-cols-2 gap-4 items-center">
-                <div class="text-sm text-gray-600">
-                    <div class="font-semibold">ИП Иванов И.И.</div>
-                    <div>ИНН: 7700000000 • ОГРНИП: 320000000000000</div>
-                    <div>Тел.: +7-900-000-00-00</div>
+        <footer class="bg-emex-dark text-white py-12">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div>
+                        <div class="text-2xl font-bold mb-4">Быстрые Запчасти</div>
+                        <p class="text-gray-400 mb-4">Оригинальные запчасти для китайских автомобилей с доставкой по Самаре и Тольятти</p>
+                        <div class="text-emex-orange font-semibold">+7-900-000-00-00</div>
+                    </div>
+                    
+                    <div>
+                        <div class="font-semibold mb-4">Города доставки</div>
+                        <div class="space-y-2 text-gray-400">
+                            <div>🚗 Самара</div>
+                            <div>🚙 Тольятти</div>
+                            <div>🚐 Ягодное</div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="font-semibold mb-4">Информация</div>
+                        <div class="space-y-2">
+                            <a href="#" class="text-gray-400 hover:text-emex-orange">Доставка и оплата</a>
+                            <a href="#" class="text-gray-400 hover:text-emex-orange">Гарантия</a>
+                            <a href="#" class="text-gray-400 hover:text-emex-orange">О компании</a>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="font-semibold mb-4">Реквизиты</div>
+                        <div class="space-y-2 text-gray-400 text-sm">
+                            <div>ИП Иванов И.И.</div>
+                            <div>ИНН: 7700000000</div>
+                            <div>ОГРНИП: 320000000000000</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="text-sm text-gray-500 sm:text-right">
-                    © <span x-text="new Date().getFullYear()"></span> Быстрые Запчасти. Все права защищены.
+                
+                <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                    <div>© <span x-text="new Date().getFullYear()"></span> Быстрые Запчасти. Все права защищены.</div>
                 </div>
             </div>
         </footer>
@@ -321,6 +487,25 @@
                     return phoneRegex.test(phone.replace(/\s/g, ''));
                 },
                 
+                sendRequest() {
+                    if (!this.formData.phone || !this.isValidPhone(this.formData.phone) || !this.formData.part) return;
+                    
+                    const message = `Заявка с сайта\nИмя: ${this.formData.name}\nТелефон: ${this.formData.phone}\nГород: ${this.city}\nМодель авто: ${this.formData.model}\nЗапчасть: ${this.formData.part}\nКомментарий: ${this.formData.comment}`;
+                    
+                    window.open(this.whatsappLink(message), '_blank');
+                    
+                    // Сброс формы
+                    this.formData = {
+                        name: '',
+                        phone: '',
+                        model: '',
+                        part: '',
+                        comment: ''
+                    };
+                    
+                    alert('Заявка отправлена! Мы свяжемся с вами в течение 30 минут.');
+                },
+                
                 get filteredProducts() {
                     const query = this.searchQuery.trim().toLowerCase();
                     if (!query) return this.products;
@@ -345,11 +530,6 @@
                     document.querySelectorAll('.fade-in').forEach(el => {
                         observer.observe(el);
                     });
-                    
-                    // Запускаем анимацию для hero сразу
-                    setTimeout(() => {
-                        document.querySelector('h1.fade-in')?.classList.add('visible');
-                    }, 100);
                 }
             };
         }
