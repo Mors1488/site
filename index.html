@@ -17,13 +17,20 @@
             transform: translateY(0);
         }
         
+        .img-loading {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .img-loaded {
+            opacity: 1;
+        }
+        
         [x-cloak] {
             display: none !important;
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
-    <!-- Alpine.js для reactivity -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     
     <div x-data="app()" x-cloak>
@@ -51,7 +58,7 @@
                         +7-900-000-00-00
                     </a>
                     <a 
-                        :href="whatsappLink('Здравствуйте! Хочу уточнить наличие и сроки доставки.')" 
+                        :href="whatsappLink('Здравствуйте! Хочу уточнить наличие и сроки доставки. Город: ' + city)" 
                         class="text-sm px-3 py-2 rounded-xl bg-green-600 text-white hover:bg-green-700"
                     >
                         WhatsApp
@@ -93,8 +100,13 @@
                 <div class="relative">
                     <img
                         alt="Склад запчастей"
-                        class="w-full h-64 sm:h-80 object-cover rounded-3xl shadow"
+                        class="w-full h-64 sm:h-80 object-cover rounded-3xl shadow img-loading"
                         src="https://placehold.co/800x500?text=Запчасти"
+                        @load="event => event.target.classList.add('img-loaded')"
+                        @error="event => {
+                            event.target.src = 'https://placehold.co/800x500?text=Ошибка+загрузки';
+                            event.target.classList.add('img-loaded');
+                        }"
                     />
                     <div class="absolute -bottom-4 -right-4 bg-white rounded-2xl shadow p-4">
                         <div class="text-sm">Среднее время ответа</div>
@@ -120,7 +132,17 @@
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <template x-for="p in filteredProducts" :key="p.id">
                     <div class="fade-in rounded-2xl border shadow-sm overflow-hidden bg-white flex flex-col">
-                        <img :src="p.img" :alt="p.title" class="w-full h-48 object-cover" />
+                        <img 
+                            :src="p.img" 
+                            :alt="p.title" 
+                            class="w-full h-48 object-cover img-loading"
+                            @load="event => event.target.classList.add('img-loaded')"
+                            @error="event => {
+                                event.target.src = 'https://placehold.co/400x260?text=Нет+изображения';
+                                event.target.classList.add('img-loaded');
+                            }"
+                            loading="lazy"
+                        />
                         <div class="p-4 flex-1 flex flex-col">
                             <div class="flex items-start justify-between gap-2">
                                 <h3 class="font-semibold leading-snug" x-text="p.title"></h3>
@@ -175,6 +197,7 @@
                             class="border rounded-xl px-3 py-2" 
                             placeholder="Телефон*"
                             x-model="formData.phone"
+                            required
                         />
                         <input 
                             class="border rounded-xl px-3 py-2 sm:col-span-2" 
@@ -193,10 +216,15 @@
                             x-model="formData.comment"
                         ></textarea>
                     </div>
+                    
+                    <div class="mt-2 text-xs text-red-500" x-show="formData.phone && !isValidPhone(formData.phone)" x-cloak>
+                        Введите корректный номер телефона
+                    </div>
+                    
                     <div class="mt-4 flex gap-3 flex-wrap">
                         <a 
                             :href="whatsappLink('Заявка с сайта\nИмя: ' + formData.name + '\nТелефон: ' + formData.phone + '\nГород: ' + city + '\nМодель авто: ' + formData.model + '\nЗапчасть: ' + formData.part + '\nКомментарий: ' + formData.comment)" 
-                            :class="{'bg-green-600 hover:bg-green-700': formData.phone && (formData.model || formData.part), 'bg-gray-300 pointer-events-none': !(formData.phone && (formData.model || formData.part))}" 
+                            :class="{'bg-green-600 hover:bg-green-700': formData.phone && isValidPhone(formData.phone) && (formData.model || formData.part), 'bg-gray-300 pointer-events-none': !(formData.phone && isValidPhone(formData.phone) && (formData.model || formData.part))}" 
                             class="px-4 py-2 rounded-2xl text-white"
                         >
                             Отправить в WhatsApp
@@ -222,7 +250,7 @@
                     <div>Тел.: +7-900-000-00-00</div>
                 </div>
                 <div class="text-sm text-gray-500 sm:text-right">
-                    © 2024 Быстрые Запчасти. Все права защищены.
+                    © <span x-text="new Date().getFullYear()"></span> Быстрые Запчасти. Все права защищены.
                 </div>
             </div>
         </footer>
@@ -285,7 +313,12 @@
                 ],
                 
                 whatsappLink(text) {
-                    return `https://wa.me/79000000000?text=${encodeURIComponent(text + ' Город: ' + this.city)}`;
+                    return `https://wa.me/79000000000?text=${encodeURIComponent(text)}`;
+                },
+                
+                isValidPhone(phone) {
+                    const phoneRegex = /^[\+]?[0-9\s\-\(\)]{10,}$/;
+                    return phoneRegex.test(phone.replace(/\s/g, ''));
                 },
                 
                 get filteredProducts() {
